@@ -23,18 +23,15 @@ ifeq ($(OS),Windows_NT)
 	RMOBJECTS = *.o *.d $(TARGET).elf $(TARGET).hex teensy3/*.o teensy3/*.d 
 	MYDIR = echo %cd%
     TOOLSPATH = tools
-    COMPILERPATH = tools/arm-none-eabi/bin
+    COMPILERPATH = tools_win/arm-none-eabi/bin
 else
     UNAME_S := $(shell uname -s)
     MYDIR = pwd
     ifeq ($(UNAME_S),Linux)
     	UNAME_P := $(shell uname -p)
     	ifeq ($(UNAME_P),x86_64)
-        	TOOLSPATH = tools_64_linux
-        	COMPILERPATH = tools_64_linux/arm-none-eabi/bin
-        else
-        	TOOLSPATH = tools_32_linux
-        	COMPILERPATH = tools_32_linux/arm-none-eabi/bin
+        	TOOLSPATH = tools_linux
+        	COMPILERPATH = tools_linux/arm-none-eabi/bin
         endif
     endif
     ifeq ($(UNAME_S),Darwin)
@@ -43,12 +40,13 @@ else
     endif
 endif
 
+BUILDPATH = build
 
 
 #TOOLSPATH = ../../../tools/avr/bin   # on Mac or Windows
 
 # path location for Arduino libraries (currently not used)
-LIBRARYPATH = arduino_libraries
+LIBRARYPATH = build
 
 # path location for the arm-none-eabi compiler
 
@@ -58,7 +56,7 @@ LIBRARYPATH = arduino_libraries
 #************************************************************************
 
 # CPPFLAGS = compiler options for C and C++
-CPPFLAGS = -Wall -g -Os -mcpu=cortex-m4 -mthumb -nostdlib -MMD $(OPTIONS) -I. -Iteensy3/
+CPPFLAGS = -Wall -g -Os -mcpu=cortex-m4 -mthumb -nostdlib -MMD $(OPTIONS) -I. -I$(BUILDPATH)/
 
 # compiler options for C++ only
 CXXFLAGS = -std=gnu++0x -felide-constructors -fno-exceptions -fno-rtti
@@ -67,7 +65,7 @@ CXXFLAGS = -std=gnu++0x -felide-constructors -fno-exceptions -fno-rtti
 CFLAGS =
 
 # linker options
-LDFLAGS = -Os -Wl,--gc-sections -mcpu=cortex-m4 -mthumb -Tteensy3/mk20dx256.ld
+LDFLAGS = -Os -Wl,--gc-sections -mcpu=cortex-m4 -mthumb -T$(BUILDPATH)/mk20dx256.ld
 
 # additional libraries to link
 LIBS = -lm
@@ -85,13 +83,13 @@ LC_FILES := $(wildcard $(LIBRARYPATH)/*/*.c)
 LCPP_FILES := $(wildcard $(LIBRARYPATH)/*/*.cpp)
 
 C_FILES := $(wildcard *.c) \
-	      $(wildcard $(addprefix teensy3/, *.c)) \
-		  $(wildcard $(addprefix teensy3/util, *.c)) \
-		  #$(wildcard $(addprefix teensy3/avr, *.c))
+	      $(wildcard $(addprefix $(BUILDPATH)/, *.c)) \
+		  #$(wildcard $(addprefix $(BUILDPATH)/util, *.c)) \
+		  #$(wildcard $(addprefix $(BUILDPATH)/avr, *.c))
 CPP_FILES := $(wildcard *.cpp) \
-		  $(wildcard $(addprefix teensy3/, *.cpp)) \
-		  $(wildcard $(addprefix teensy3/util, *.cpp)) \
-		  #$(wildcard $(addprefix teensy3/avr, *.cpp))
+		  $(wildcard $(addprefix $(BUILDPATH)/, *.cpp)) \
+		  #$(wildcard $(addprefix $(BUILDPATH)/util, *.cpp)) \
+		  #$(wildcard $(addprefix $(BUILDPATH)/avr, *.cpp))
 OBJS := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o)
 
 #L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
@@ -101,7 +99,7 @@ OBJS := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o)
 all: $(TARGET).hex
 
 
-$(TARGET).elf: $(OBJS) teensy3/mk20dx256.ld
+$(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) $(L_INC)
 
 %.hex: %.elf
@@ -119,7 +117,6 @@ clean:
 	# ifeq ($(OS),Windows_NT)
 		rm *.o 
 		rm *.d 
-		rm $(TARGET).elf 
 		rm $(TARGET).hex
 		rm teensy3/*.o
 		rm teensy3/*.d
