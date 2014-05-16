@@ -22,7 +22,7 @@ OPTIONS += -D__MK20DX256__ -DARDUIO=105
 ifeq ($(OS),Windows_NT)
 	RMOBJECTS = *.o *.d $(TARGET).elf $(TARGET).hex teensy3/*.o teensy3/*.d 
 	MYDIR = echo %cd%
-    TOOLSPATH = tools
+    TOOLSPATH = tools_win
     COMPILERPATH = tools_win/arm-none-eabi/bin
 else
     UNAME_S := $(shell uname -s)
@@ -31,7 +31,7 @@ else
     	UNAME_P := $(shell uname -p)
     	ifeq ($(UNAME_P),x86_64)
         	TOOLSPATH = tools_linux
-        	COMPILERPATH = tools_linux/arm-none-eabi/bin
+        	COMPILERPATH = toolscd D_linux/arm-none-eabi/bin
         endif
     endif
     ifeq ($(UNAME_S),Darwin)
