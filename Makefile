@@ -31,12 +31,12 @@ else
     	UNAME_P := $(shell uname -p)
     	ifeq ($(UNAME_P),x86_64)
         	TOOLSPATH = tools_linux
-        	COMPILERPATH = toolscd D_linux/arm-none-eabi/bin
+        	COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
         endif
     endif
     ifeq ($(UNAME_S),Darwin)
         TOOLSPATH = tools_mac
-        COMPILERPATH = tools_mac/arm-none-eabi/bin
+        COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
     endif
 endif
 
