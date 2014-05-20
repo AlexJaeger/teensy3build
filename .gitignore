@@ -1,2 +1,6 @@
 build/*
 /main.*
+_exampleproject/main.elf
+_exampleproject/main.hex
+_exampleproject/main.o
+_exampleproject/main.d
