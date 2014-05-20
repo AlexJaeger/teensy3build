@@ -115,11 +115,9 @@ $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 
 clean:
 	# ifeq ($(OS),Windows_NT)
-		rm *.o 
-		rm *.d 
-		rm $(TARGET).hex
-		rm teensy3/*.o
-		rm teensy3/*.d
+		rm *.d
+		rm *.elf
+		rm *.hex
 	# else
 	# 	rm *.o 
 	# 	rm *.d 
