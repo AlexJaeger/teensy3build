@@ -16,16 +16,20 @@ OPTIONS += -D__MK20DX256__ -DARDUIO=105
 # locations and edit the pathnames.  The rest of Arduino is not needed.
 #************************************************************************
 
+
+
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 
-
-RMOBJECTS = *.o *.d $(TARGET).elf $(TARGET).hex ../build/*.o ../build/*.d 
+PYTHONSCRIPT :=  cd .. && python config.py && cd -
+BLANK = $(shell $(PYTHONSCRIPT))
+RMOBJECTS := *.o *.d $(TARGET).elf $(TARGET).hex -rf ../build
+$(shell )
 
 ifeq ($(OS),Windows_NT)
 	RMCMD = del
 	MYDIR = echo %cd%
-    TOOLSPATH = tools_win
-    COMPILERPATH = ../$(TOOLSPATH)/arm-none-eabi/bin
+    TOOLSPATH = ../tools_win
+    COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
 else
 	RMCMD = rm
     UNAME_S := $(shell uname -s)
@@ -33,13 +37,13 @@ else
     ifeq ($(UNAME_S),Linux)
     	UNAME_P := $(shell uname -p)
     	ifeq ($(UNAME_P),x86_64)
-        	TOOLSPATH = tools_linux
-        	COMPILERPATH = ../$(TOOLSPATH)/arm-none-eabi/bin
+        	TOOLSPATH = ../tools_linux
+        	COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
         endif
     endif
     ifeq ($(UNAME_S),Darwin)
-        TOOLSPATH = tools_mac
-        COMPILERPATH = ../$(TOOLSPATH)/arm-none-eabi/bin
+        TOOLSPATH = ../tools_mac
+        COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
     endif
 endif
 
@@ -99,7 +103,9 @@ OBJS := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o)
 
 # the actual makefile rules (all .o files built by GNU make's default implicit rules)
 
+
 all: $(TARGET).hex
+
 
 
 $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
@@ -108,8 +114,8 @@ $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 %.hex: %.elf
 	$(SIZE) $<
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
-	$(abspath ../$(TOOLSPATH))/teensy_post_compile -file=$(basename $@) -path=$(shell $(MYDIR)) -tools=$(abspath $(TOOLSPATH))
-	-$(abspath ../$(TOOLSPATH))/teensy_reboot
+	$(abspath $(TOOLSPATH))/teensy_post_compile -file=$(basename $@) -path=$(shell $(MYDIR)) -tools=$(abspath $(TOOLSPATH))
+	-$(abspath $(TOOLSPATH))/teensy_reboot
 
 # compiler generated dependency info
 -include $(OBJS:.o=.d)
