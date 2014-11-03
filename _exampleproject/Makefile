@@ -19,23 +19,26 @@ OPTIONS += -D__MK20DX256__ -DARDUIO=105
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 
 
+RMOBJECTS = *.o *.d $(TARGET).elf $(TARGET).hex ../build/*.o ../build/*.d 
+
 ifeq ($(OS),Windows_NT)
-	RMOBJECTS = *.o *.d $(TARGET).elf $(TARGET).hex teensy3/*.o teensy3/*.d 
+	RMCMD = del
 	MYDIR = echo %cd%
-    TOOLSPATH = ../tools_win
-    COMPILERPATH = ../tools_win/arm-none-eabi/bin
+    TOOLSPATH = tools_win
+    COMPILERPATH = ../$(TOOLSPATH)/arm-none-eabi/bin
 else
+	RMCMD = rm
     UNAME_S := $(shell uname -s)
     MYDIR = pwd
     ifeq ($(UNAME_S),Linux)
     	UNAME_P := $(shell uname -p)
     	ifeq ($(UNAME_P),x86_64)
-        	TOOLSPATH = ../tools_linux
-        	COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
+        	TOOLSPATH = tools_linux
+        	COMPILERPATH = ../$(TOOLSPATH)/arm-none-eabi/bin
         endif
     endif
     ifeq ($(UNAME_S),Darwin)
-        TOOLSPATH = ../tools_mac
+        TOOLSPATH = tools_mac
         COMPILERPATH = ../$(TOOLSPATH)/arm-none-eabi/bin
     endif
 endif
@@ -105,8 +108,8 @@ $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 %.hex: %.elf
 	$(SIZE) $<
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
-	$(abspath $(TOOLSPATH))/teensy_post_compile -file=$(basename $@) -path=$(shell $(MYDIR)) -tools=$(abspath $(TOOLSPATH))
-	-$(abspath $(TOOLSPATH))/teensy_reboot
+	$(abspath ../$(TOOLSPATH))/teensy_post_compile -file=$(basename $@) -path=$(shell $(MYDIR)) -tools=$(abspath $(TOOLSPATH))
+	-$(abspath ../$(TOOLSPATH))/teensy_reboot
 
 # compiler generated dependency info
 -include $(OBJS:.o=.d)
@@ -114,18 +117,4 @@ $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 
 
 clean:
-	# ifeq ($(OS),Windows_NT)
-		rm *.d
-		rm *.elf
-		rm *.hex
-	# else
-	# 	rm *.o 
-	# 	rm *.d 
-	# 	rm $(TARGET).elf 
-	# 	rm $(TARGET).hex
-	# 	rm teensy3/*.o
-	# 	rm teensy3/*.d
-	# endif
-	
-
-
+	$(RMCMD) $(RMOBJECTS)
