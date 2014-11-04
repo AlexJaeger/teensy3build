@@ -6,7 +6,7 @@ TARGET = main
 OPTIONS = -DF_CPU=96000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 
 # options needed by many Arduino libraries to configure for Teensy 3.0
-OPTIONS += -D__MK20DX256__ -DARDUIO=105
+OPTIONS += -D__MK20DX128__ -DARDUIO=105
 # Spelling mistake here, intentioanl or not? If corrected the standard Makefile provided doesnt compile as it the #if !def(ARDUINO) clause is true instad of false
 # This leaves undeclared definitions setup() and loop() in main.cpp and causes compile to fail.
 
@@ -20,17 +20,21 @@ OPTIONS += -D__MK20DX256__ -DARDUIO=105
 
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 
-PYTHONSCRIPT :=  cd .. && python config.py && cd -
-BLANK = $(shell $(PYTHONSCRIPT))
-RMOBJECTS := *.o *.d $(TARGET).elf $(TARGET).hex -rf ../build
-$(shell )
 
+
+
+RMOBJECTS := *.o *.d $(TARGET).elf $(TARGET).hex
+PYTHONSCRIPT :=  python ../config.py
 ifeq ($(OS),Windows_NT)
+	BLANK := $(shell $(PYTHONSCRIPT))
 	RMCMD = del
 	MYDIR = echo %cd%
     TOOLSPATH = ../tools_win
     COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
+    #LOCAL_PATH := $(call my-dir)
+	#$(warning $(LOCAL_PATH))
 else
+	BLANK := $(shell $(PYTHONSCRIPT))
 	RMCMD = rm
     UNAME_S := $(shell uname -s)
     MYDIR = pwd
@@ -72,7 +76,7 @@ CXXFLAGS = -std=gnu++0x -felide-constructors -fno-exceptions -fno-rtti
 CFLAGS =
 
 # linker options
-LDFLAGS = -Os -Wl,--gc-sections -mcpu=cortex-m4 -mthumb -T$(BUILDPATH)/mk20dx256.ld
+LDFLAGS = -Os -Wl,--gc-sections -mcpu=cortex-m4 -mthumb -T$(BUILDPATH)/mk20dx128.ld
 
 # additional libraries to link
 LIBS = -lm
@@ -108,7 +112,7 @@ all: $(TARGET).hex
 
 
 
-$(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
+$(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx128.ld
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) $(L_INC)
 
 %.hex: %.elf
@@ -123,4 +127,4 @@ $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 
 
 clean:
-	$(RMCMD) $(RMOBJECTS)
+	-$(RMCMD) $(RMOBJECTS)

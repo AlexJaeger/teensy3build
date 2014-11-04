@@ -4,6 +4,11 @@ import os
 import shutil
 import sys
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
+
 MAINFILE = 'main.cpp'
 COREDIR = 'cores/teensy3'
 BUILDDIR = 'build'
