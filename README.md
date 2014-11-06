@@ -19,18 +19,11 @@ Instructions
 ------------
 1. Clone the repository (if you haven't done so already).
 2. Change directory to the repository folder on the command line.
-3. Run:
-	```
-	git submodule init
-	git submodule update
-	```
+3. Run:	`git submodule init` and `git submodule update`
 	This will update the teensy core files to the latest version
 4. Copy and rename one of the example project folders, depending on your Teensy version. This is now your project folder
 5. Change directory into your new project folder. You should see a 'Makefile' and 'main.cpp'
-6. Type:
-	```
-	make
-	```
+6. Type: `make`
  The example program should compile and the Teensy LED should blink (Pin 13)
 Run the Makefile for your Teensy, and the example project should compile!
 
