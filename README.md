@@ -27,4 +27,9 @@ Instructions
  The example program should compile and the Teensy LED should blink (Pin 13)
 Run the Makefile for your Teensy, and the example project should compile!
 
+Acknowledgements
+----------------
+This repository contains a mixture of source code and binaries from the Arduino, PJRC's Teensyduino and GNU GCC Projects.
+The teensy3build repository merely bundles these together and uses a Makefile (modifled from PJRC) to provide a 'ready-to-go' alternative to the Arduino IDE
+
 (More Instructions to come)
