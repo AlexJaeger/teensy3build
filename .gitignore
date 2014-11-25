@@ -1,6 +1,10 @@
 build/*
 /main.*
-_exampleproject/main.elf
-_exampleproject/main.hex
-_exampleproject/main.o
-_exampleproject/main.d
+_exampleproject_Teensy3.0/*.elf
+_exampleproject_Teensy3.0/*.hex
+_exampleproject_Teensy3.0/*.o
+_exampleproject_Teensy3.0/*.d
+_exampleproject_Teensy3.1/*.elf
+_exampleproject_Teensy3.1/*.hex
+_exampleproject_Teensy3.1/*.o
+_exampleproject_Teensy3.1/*.d

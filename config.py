@@ -1,3 +1,9 @@
+# Written by Alexander Jaeger, University College Cork, Ireland
+
+
+# FUNCTION: This file configures the temporary build folder
+# WHEN CALLED: This file is run at the beginning of the Makefile
+# WHAT DOES THIS FILE DO: The user selected libraries and all the teensy3 core files to BUILDDIR directory.
 
 
 import os
@@ -12,7 +18,10 @@ os.chdir(dname)
 MAINFILE = 'main.cpp'
 COREDIR = 'cores/teensy3'
 BUILDDIR = 'build'
+LIBDIR = 'libraries'
 
+# IMPORTANT
+# Add the names of the libraries you wish to use to this list.
 LIBADD = [
 'Wire'
 
@@ -25,10 +34,12 @@ shutil.copytree(COREDIR,BUILDDIR)
 
 os.chdir(BUILDDIR)
 if os.path.isfile(MAINFILE):
+	# Removes the template main.cpp file, originally located in the teensy3 cores directory.
+	# Otherwise it will interfere with the main.cpp located in the examples folder.
     os.remove(MAINFILE)
 os.chdir('..')
 
-os.chdir('libraries')
+os.chdir(LIBDIR)
 libraries = os.listdir('.')
 libraries.sort()
 
@@ -39,6 +50,6 @@ for folder in libraries:
         librarydir = os.listdir('.')
         for somefile in librarydir:
             if os.path.isfile(somefile):
-                shutil.copyfile(somefile, '../../build/' + somefile)
+                shutil.copyfile(somefile, '../../' + BUILDDIR + '/' + somefile)
         print "Added: ", folder
         os.chdir('..')

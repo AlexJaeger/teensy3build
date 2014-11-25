@@ -1,3 +1,18 @@
+# This Makefile forms the basis of the teensy3build system.
+# It is a modified version of the makefile distributed created by Paul Stoffregan with Teensyduino (www.pjrc.com).
+# Modified by Alexander Jaeger, University College Cork, Ireland.
+
+# How it works:
+# On invoking Make
+# 1. The makefile runs the python script to configure the build folder.
+# 2. Make detects your OS, and then proceeds to compile everything in the build folder
+#    along with your project, located for example in the '_exampleproject_Teensy3.0' folder.
+# 3. Make then links the resultant .o and produces a .hex file as the final output
+# 4. This file is then uploaded to the Teensy using Teensyloader.
+
+
+
+
 
 # The name of your project (used to name the compiled .hex file)
 TARGET = main
@@ -18,23 +33,23 @@ OPTIONS += -D__MK20DX256__ -DARDUIO=105
 
 
 
-# path location for Teensy Loader, teensy_post_compile and teensy_reboot
+# Path location for Teensy Loader, teensy_post_compile and teensy_reboot
+# Operating system detection selectes the appropriate  build folder here.
 
-
-
-
+# Object files to be cleaned on 'make clean'
 RMOBJECTS := *.o *.d $(TARGET).elf $(TARGET).hex
+
+# Execute the python script to configure the build directory
 PYTHONSCRIPT :=  python ../config.py
+BLANK := $(shell $(PYTHONSCRIPT))
+
 ifeq ($(OS),Windows_NT)
-	BLANK := $(shell $(PYTHONSCRIPT))
 	RMCMD = del
 	MYDIR = echo %cd%
     TOOLSPATH = ../tools_win
+    # path location for the arm-none-eabi compiler
     COMPILERPATH = $(TOOLSPATH)/arm-none-eabi/bin
-    #LOCAL_PATH := $(call my-dir)
-	#$(warning $(LOCAL_PATH))
 else
-	BLANK := $(shell $(PYTHONSCRIPT))
 	RMCMD = rm
     UNAME_S := $(shell uname -s)
     MYDIR = pwd
@@ -54,12 +69,6 @@ endif
 BUILDPATH = ../build
 
 
-#TOOLSPATH = ../../../tools/avr/bin   # on Mac or Windows
-
-# path location for Arduino libraries (currently not used)
-LIBRARYPATH = ../build
-
-# path location for the arm-none-eabi compiler
 
 
 #************************************************************************
@@ -78,7 +87,7 @@ CFLAGS =
 # linker options
 LDFLAGS = -Os -Wl,--gc-sections -mcpu=cortex-m4 -mthumb -T$(BUILDPATH)/mk20dx256.ld
 
-# additional libraries to link
+# additional libraries to link, math
 LIBS = -lm
 
 
@@ -88,29 +97,21 @@ CXX = $(abspath $(COMPILERPATH))/arm-none-eabi-g++
 OBJCOPY = $(abspath $(COMPILERPATH))/arm-none-eabi-objcopy
 SIZE = $(abspath $(COMPILERPATH))/arm-none-eabi-size
 
-# automatically create lists of the sources and objects
-# TODO: this does not handle Arduino libraries yet...
-LC_FILES := $(wildcard $(LIBRARYPATH)/*/*.c)
-LCPP_FILES := $(wildcard $(LIBRARYPATH)/*/*.cpp)
 
+# All the source file names BUILDPATH are gathered
 C_FILES := $(wildcard *.c) \
 	      $(wildcard $(addprefix $(BUILDPATH)/, *.c)) \
-		  #$(wildcard $(addprefix $(BUILDPATH)/util, *.c)) \
-		  #$(wildcard $(addprefix $(BUILDPATH)/avr, *.c))
+
 CPP_FILES := $(wildcard *.cpp) \
 		  $(wildcard $(addprefix $(BUILDPATH)/, *.cpp)) \
-		  #$(wildcard $(addprefix $(BUILDPATH)/util, *.cpp)) \
-		  #$(wildcard $(addprefix $(BUILDPATH)/avr, *.cpp))
+
 OBJS := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o)
 
-#L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
 
-# the actual makefile rules (all .o files built by GNU make's default implicit rules)
 
+# The actual makefile rules (all .o files built by GNU make's default implicit rules)
 
 all: $(TARGET).hex
-
-
 
 $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) $(L_INC)
@@ -123,8 +124,6 @@ $(TARGET).elf: $(OBJS) $(BUILDPATH)/mk20dx256.ld
 
 # compiler generated dependency info
 -include $(OBJS:.o=.d)
-
-
 
 clean:
 	-$(RMCMD) $(RMOBJECTS)
