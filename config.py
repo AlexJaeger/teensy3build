@@ -23,7 +23,9 @@ LIBDIR = 'libraries'
 # IMPORTANT
 # Add the names of the libraries you wish to use to this list.
 LIBADD = [
-'Wire'
+'Wire',
+'AccelStepper',
+'Encoder'
 
 ]
 
@@ -48,8 +50,10 @@ for folder in libraries:
     if folder in LIBADD:
         os.chdir(folder)
         librarydir = os.listdir('.')
-        for somefile in librarydir:
-            if os.path.isfile(somefile):
-                shutil.copyfile(somefile, '../../' + BUILDDIR + '/' + somefile)
+        for something in librarydir:
+            if os.path.isfile(something):
+                shutil.copyfile(something, '../../' + BUILDDIR + '/' + something)
+            elif (something) == 'utility' and (folder == 'Encoder'):
+                shutil.copytree(something, '../../' + BUILDDIR +'/'+ something)
         print "Added: ", folder
         os.chdir('..')
