@@ -1,3 +1,6 @@
 [submodule "cores"]
 	path = cores
 	url = https://github.com/paulstoffregen/cores.git
+[submodule "libraries/i2c_t3"]
+	path = libraries/i2c_t3
+	url = https://github.com/nox771/i2c_t3
