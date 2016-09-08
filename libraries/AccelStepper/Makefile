@@ -2,15 +2,20 @@
 #
 # Makefile for the Arduino AccelStepper project
 #
-# Author: Mike McCauley (mikem@open.com.au)
+# Author: Mike McCauley (mikem@airspayce.com)
 # Copyright (C) 2010 Mike McCauley
-# $Id: Makefile,v 1.3 2011/03/21 00:42:15 mikem Exp mikem $
+# $Id: Makefile,v 1.6 2015/08/25 04:57:29 mikem Exp mikem $
 
 PROJNAME = AccelStepper
-# Dont forget to also change the version at the top of AccelStepper.h:
-DISTFILE = $(PROJNAME)-1.30.zip
+VERSION_MAJOR = 1
+VERSION_MINOR = 53
 
-all:	doxygen dist upload
+DISTFILE = $(PROJNAME)-$(VERSION_MAJOR).$(VERSION_MINOR).zip
+
+all:	versioning doxygen dist upload
+
+versioning:
+	sed -i.bak -e 's/AccelStepper-.*\.zip/$(DISTFILE)/' AccelStepper.h
 
 doxygen: 
 	doxygen project.cfg
@@ -22,6 +27,4 @@ dist:
 	(cd ..; zip $(PROJNAME)/$(DISTFILE) `cat $(PROJNAME)/MANIFEST`)
 
 upload:
-	rsync -avz $(DISTFILE) doc/ server2:/var/www/html/mikem/arduino/$(PROJNAME)
-
-#	scp $(DISTFILE) doc/*.html doc/*.gif doc/*.png doc/*.css doc/*.pdf server2:/var/www/html/mikem/arduino/$(PROJNAME)
+	rsync -avz $(DISTFILE) doc/ www.airspayce.com:public_html/mikem/arduino/$(PROJNAME)

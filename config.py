@@ -55,5 +55,5 @@ for folder in libraries:
                 shutil.copyfile(something, '../../' + BUILDDIR + '/' + something)
             elif (something) == 'utility' and (folder == 'Encoder'):
                 shutil.copytree(something, '../../' + BUILDDIR +'/'+ something)
-        print "Added: ", folder
+        print ("Added: ", folder)
         os.chdir('..')
